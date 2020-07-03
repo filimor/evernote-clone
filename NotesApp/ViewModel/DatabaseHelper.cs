@@ -1,12 +1,22 @@
 ﻿using System;
 using System.IO;
+using NotesApp.Model;
 using SQLite;
 
 namespace NotesApp.ViewModel
 {
     public static class DatabaseHelper
     {
-        private static readonly string DbFile = Path.Combine(Environment.CurrentDirectory, "notesDb.db3");
+        public static readonly string DbFile = Path.Combine(Environment.CurrentDirectory, "notesDb.db3");
+
+        public static void InitializeDb()
+        {
+            using (var conn = new SQLiteConnection(DbFile))
+            {
+                conn.CreateTable<Notebook>();
+                conn.CreateTable<Note>();
+            }
+        }
 
         public static bool Insert<T>(T item)
         {
@@ -14,7 +24,6 @@ namespace NotesApp.ViewModel
 
             using (var conn = new SQLiteConnection(DbFile))
             {
-                conn.CreateTable<T>();
                 if (conn.Insert(item) > 0)
                 {
                     result = true;
@@ -30,7 +39,6 @@ namespace NotesApp.ViewModel
 
             using (var conn = new SQLiteConnection(DbFile))
             {
-                conn.CreateTable<T>();
                 if (conn.Update(item) > 0)
                 {
                     result = true;
@@ -46,7 +54,6 @@ namespace NotesApp.ViewModel
 
             using (var conn = new SQLiteConnection(DbFile))
             {
-                conn.CreateTable<T>();
                 if (conn.Delete(item) > 0)
                 {
                     result = true;

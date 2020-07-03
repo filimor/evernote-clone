@@ -28,5 +28,10 @@ namespace NotesApp.View
         {
             Application.Current.Shutdown();
         }
+
+        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            //TODO: Speech recognition
+        }
     }
 }
