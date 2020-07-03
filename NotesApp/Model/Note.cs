@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using SQLite;
 
 namespace NotesApp.Model
 {
@@ -18,6 +19,7 @@ namespace NotesApp.Model
 
         private DateTime _updatedTime;
 
+        [PrimaryKey, AutoIncrement]
         public int Id
         {
             get => _id;
@@ -28,6 +30,7 @@ namespace NotesApp.Model
             }
         }
 
+        [Indexed]
         public int NotebookId
         {
             get => _notebookId;
