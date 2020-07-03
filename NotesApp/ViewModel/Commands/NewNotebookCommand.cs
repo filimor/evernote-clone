@@ -19,7 +19,7 @@ namespace NotesApp.ViewModel.Commands
 
         public void Execute(object parameter)
         {
-            //TODO: Create new notebook
+            Vm.CreateNotebook();
         }
 
         public event EventHandler CanExecuteChanged;

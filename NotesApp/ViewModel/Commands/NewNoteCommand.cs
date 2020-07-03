@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Input;
+using NotesApp.Model;
 
 namespace NotesApp.ViewModel.Commands
 {
@@ -14,12 +15,13 @@ namespace NotesApp.ViewModel.Commands
 
         public bool CanExecute(object parameter)
         {
-            return true;
+            return parameter is Notebook;
         }
 
         public void Execute(object parameter)
         {
-            //TODO: Create new note
+            var selectedNotebook = parameter as Notebook;
+            Vm.CreateNote(selectedNotebook.Id);
         }
 
         public event EventHandler CanExecuteChanged;

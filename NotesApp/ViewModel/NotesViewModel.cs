@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using NotesApp.Model;
 using NotesApp.ViewModel.Commands;
 
@@ -12,6 +13,9 @@ namespace NotesApp.ViewModel
             NewNoteCommand = new NewNoteCommand(this);
         }
 
+        public ObservableCollection<Note> Notes { get; set; }
+        public NewNotebookCommand NewNotebookCommand { get; set; }
+        public NewNoteCommand NewNoteCommand { get; set; }
         public ObservableCollection<Notebook> Notebooks { get; set; }
 
         public Notebook SelectedNotebook
@@ -21,9 +25,27 @@ namespace NotesApp.ViewModel
             //TODO: get notes
         }
 
-        public ObservableCollection<Note> Notes { get; set; }
+        public void CreateNotebook()
+        {
+            var newNotebook = new Notebook()
+            {
+                Name = "New notebook"
+            };
 
-        public NewNotebookCommand NewNotebookCommand { get; set; }
-        public NewNoteCommand NewNoteCommand { get; set; }
+            DatabaseHelper.Insert(newNotebook);
+        }
+
+        public void CreateNote(int notebookId)
+        {
+            var newNote = new Note()
+            {
+                NotebookId = notebookId,
+                CreatedTime = DateTime.Now,
+                UpdatedTime = DateTime.Now,
+                Title = "New note"
+            };
+
+            DatabaseHelper.Insert(newNote);
+        }
     }
 }
