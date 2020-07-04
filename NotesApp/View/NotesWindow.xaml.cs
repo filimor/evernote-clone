@@ -1,9 +1,12 @@
-﻿using System.Linq;
+﻿using System.Globalization;
+using System.Linq;
 using System.Speech.Recognition;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
+using System.Globalization;
 
 namespace NotesApp.View
 {
@@ -13,7 +16,6 @@ namespace NotesApp.View
     public partial class NotesWindow : Window
     {
         private SpeechRecognitionEngine _recognizer;
-        private bool _isRecognizing = false;
 
         public NotesWindow()
         {
@@ -22,15 +24,19 @@ namespace NotesApp.View
             RecognizerInfo currentCulture = (from r in SpeechRecognitionEngine.InstalledRecognizers()
                 where r.Culture.Equals(Thread.CurrentThread.CurrentCulture)
                 select r).FirstOrDefault();
-            _recognizer = new SpeechRecognitionEngine(currentCulture);
+            if (currentCulture != null)
+            {
+                _recognizer = new SpeechRecognitionEngine(currentCulture);
 
-            var builder = new GrammarBuilder();
-            builder.AppendDictation();
-            var grammar = new Grammar(builder);
-            _recognizer.LoadGrammar(grammar);
-            _recognizer.SetInputToDefaultAudioDevice();
+                var builder = new GrammarBuilder();
+                builder.AppendDictation();
+                var grammar = new Grammar(builder);
+                _recognizer.LoadGrammar(grammar);
+                _recognizer.SetInputToDefaultAudioDevice();
 
-            _recognizer.SpeechRecognized += Recognizer_SpeechRecognized;
+                _recognizer.SpeechRecognized += Recognizer_SpeechRecognized;
+            }
+
         }
 
         private void Recognizer_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
@@ -45,15 +51,18 @@ namespace NotesApp.View
 
         private void SpeechButton_OnClick(object sender, RoutedEventArgs e)
         {
-            if (!_isRecognizing)
+            if (_recognizer == null)
+            {
+                MessageBox.Show("There's no speech recognizers installed.");
+                return;
+            }
+            if ((sender as ToggleButton)?.IsChecked ?? false)
             {
                 _recognizer.RecognizeAsync(RecognizeMode.Multiple);
-                _isRecognizing = true;
             }
             else
             {
                 _recognizer.RecognizeAsyncStop();
-                _isRecognizing = false;
             }
         }
 
@@ -67,7 +76,20 @@ namespace NotesApp.View
 
         private void BoldButton_OnClick(object sender, RoutedEventArgs e)
         {
-            ContentRichTextBox.Selection.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
+            if ((sender as ToggleButton)?.IsChecked ?? false)
+            {
+                ContentRichTextBox.Selection.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
+            }
+            else
+            {
+                ContentRichTextBox.Selection.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
+            }
+        }
+
+        private void ContentRichTextBox_OnSelectionChanged(object sender, RoutedEventArgs e)
+        {
+            var selectedState = ContentRichTextBox.Selection.GetPropertyValue(TextElement.FontWeightProperty);
+            BoldButton.IsChecked = selectedState != DependencyProperty.UnsetValue && selectedState.Equals(FontWeights.Bold);
         }
     }
 }
