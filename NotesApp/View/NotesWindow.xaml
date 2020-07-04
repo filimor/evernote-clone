@@ -49,7 +49,7 @@
         </ListView>
         <ToolBarTray DockPanel.Dock="Top">
             <ToolBar>
-                <Button Click="ButtonBase_OnClick" Content="Speech" />
+                <Button x:Name="SpeechButton" Click="SpeechButton_OnClick" Content="Speech" />
                 <Button x:Name="BoldButton" Click="BoldButton_OnClick">
                     <TextBlock Text="B"
                                FontWeight="Bold"
