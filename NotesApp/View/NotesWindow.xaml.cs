@@ -33,5 +33,16 @@ namespace NotesApp.View
         {
             //TODO: Speech recognition
         }
+
+        private void ContentRichTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            int amountOfCharacters = new TextRange(ContentRichTextBox.Document.ContentStart, ContentRichTextBox.Document.ContentEnd).Text.Length;
+            StatusTextBlock.Text = $"Document length: {amountOfCharacters} characters";
+        }
+
+        private void BoldButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            ContentRichTextBox.Selection.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
+        }
     }
 }
