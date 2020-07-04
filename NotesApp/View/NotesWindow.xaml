@@ -54,13 +54,32 @@
                     <TextBlock Text="B"
                                FontWeight="Bold"
                                />
+                </ToggleButton><ToggleButton x:Name="ItalicButton" Click="ItalicButton_OnClickButton_OnClick">
+                    <TextBlock Text="I"
+                               FontStyle="Italic"
+                               />
+                </ToggleButton><ToggleButton x:Name="UnderlineButton" Click="UnderlineButton_OnClickButton_OnClick">
+                    <TextBlock Text="U"
+                               TextDecorations="Underline"
+                    />
                 </ToggleButton>
+                <ComboBox x:Name="FontFamilyComboBox"
+                          Width="100"
+                          SelectionChanged="FontFamilyComboBox_OnSelectionChanged"/>
+                <ComboBox x:Name="FontSizeComboBox"
+                          Width="30"
+                          IsEditable="True"
+                          SelectionChanged="FontSizeComboBox_OnSelectionChanged"/>
             </ToolBar>
         </ToolBarTray>
         <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="61*"/>
+                <ColumnDefinition Width="251*"/>
+            </Grid.ColumnDefinitions>
             <RichTextBox x:Name="ContentRichTextBox"
                          TextChanged="ContentRichTextBox_OnTextChanged"
-                         SelectionChanged="ContentRichTextBox_OnSelectionChanged"/>
+                         SelectionChanged="ContentRichTextBox_OnSelectionChanged" Grid.ColumnSpan="2"/>
         </Grid>
 
     </DockPanel>
