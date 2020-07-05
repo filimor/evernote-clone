@@ -17,6 +17,7 @@ namespace NotesApp.ViewModel
 
             DatabaseHelper.InitializeDb();
             ReadNotebooks();
+            ReadNotes();
         }
 
         public ObservableCollection<Note> Notes { get; set; }
@@ -24,12 +25,18 @@ namespace NotesApp.ViewModel
         public NewNoteCommand NewNoteCommand { get; set; }
         public ObservableCollection<Notebook> Notebooks { get; set; }
 
+        private Notebook _selectedNotebook;
+
         public Notebook SelectedNotebook
         {
-            get;
-            set;
-            //TODO: get notes
+            get => _selectedNotebook;
+            set
+            {
+                _selectedNotebook = value;
+                ReadNotes();
+            }
         }
+
 
         public void CreateNotebook()
         {
@@ -39,6 +46,7 @@ namespace NotesApp.ViewModel
             };
 
             DatabaseHelper.Insert(newNotebook);
+            ReadNotebooks();
         }
 
         public void CreateNote(int notebookId)
@@ -52,6 +60,7 @@ namespace NotesApp.ViewModel
             };
 
             DatabaseHelper.Insert(newNote);
+            ReadNotes();
         }
 
         public void ReadNotebooks()

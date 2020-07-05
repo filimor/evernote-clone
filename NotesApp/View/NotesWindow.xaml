@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:NotesApp.View"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:uc="clr-namespace:NotesApp.View.UserControls"
         xmlns:vm="clr-namespace:NotesApp.ViewModel"
         Title="NotesWindow"
         Width="600"
@@ -25,16 +26,17 @@
         </Menu>
         <StatusBar DockPanel.Dock="Bottom">
             <StatusBarItem>
-                <TextBlock x:Name="StatusTextBlock"></TextBlock>
+                <TextBlock x:Name="StatusTextBlock" />
             </StatusBarItem>
         </StatusBar>
         <ListView Width="140"
+                  Background="MidnightBlue"
                   DockPanel.Dock="Left"
                   ItemsSource="{Binding Notebooks}"
                   SelectedItem="{Binding SelectedNotebook, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Name}" />
+                    <uc:NotebookControl DisplayNotebook="{Binding}" />
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
@@ -43,43 +45,42 @@
                   ItemsSource="{Binding Notes}">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Title}" />
+                    <uc:NoteControl Note="{Binding}" />
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
         <ToolBarTray DockPanel.Dock="Top">
             <ToolBar>
-                <ToggleButton x:Name="SpeechButton" Click="SpeechButton_OnClick" Content="Speech" />
+                <ToggleButton x:Name="SpeechButton"
+                              Click="SpeechButton_OnClick"
+                              Content="Speech" />
                 <ToggleButton x:Name="BoldButton" Click="BoldButton_OnClick">
-                    <TextBlock Text="B"
-                               FontWeight="Bold"
-                               />
-                </ToggleButton><ToggleButton x:Name="ItalicButton" Click="ItalicButton_OnClickButton_OnClick">
-                    <TextBlock Text="I"
-                               FontStyle="Italic"
-                               />
-                </ToggleButton><ToggleButton x:Name="UnderlineButton" Click="UnderlineButton_OnClickButton_OnClick">
-                    <TextBlock Text="U"
-                               TextDecorations="Underline"
-                    />
+                    <TextBlock FontWeight="Bold" Text="B" />
+                </ToggleButton>
+                <ToggleButton x:Name="ItalicButton" Click="ItalicButton_OnClickButton_OnClick">
+                    <TextBlock FontStyle="Italic" Text="I" />
+                </ToggleButton>
+                <ToggleButton x:Name="UnderlineButton" Click="UnderlineButton_OnClickButton_OnClick">
+                    <TextBlock Text="U" TextDecorations="Underline" />
                 </ToggleButton>
                 <ComboBox x:Name="FontFamilyComboBox"
                           Width="100"
-                          SelectionChanged="FontFamilyComboBox_OnSelectionChanged"/>
+                          SelectionChanged="FontFamilyComboBox_OnSelectionChanged" />
                 <ComboBox x:Name="FontSizeComboBox"
                           Width="30"
                           IsEditable="True"
-                          SelectionChanged="FontSizeComboBox_OnSelectionChanged"/>
+                          SelectionChanged="FontSizeComboBox_OnSelectionChanged" />
             </ToolBar>
         </ToolBarTray>
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="61*"/>
-                <ColumnDefinition Width="251*"/>
+                <ColumnDefinition Width="61*" />
+                <ColumnDefinition Width="251*" />
             </Grid.ColumnDefinitions>
             <RichTextBox x:Name="ContentRichTextBox"
-                         TextChanged="ContentRichTextBox_OnTextChanged"
-                         SelectionChanged="ContentRichTextBox_OnSelectionChanged" Grid.ColumnSpan="2"/>
+                         Grid.ColumnSpan="2"
+                         SelectionChanged="ContentRichTextBox_OnSelectionChanged"
+                         TextChanged="ContentRichTextBox_OnTextChanged" />
         </Grid>
 
     </DockPanel>
