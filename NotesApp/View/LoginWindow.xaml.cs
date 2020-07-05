@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using NotesApp.ViewModel;
 
 namespace NotesApp.View
 {
@@ -22,6 +23,28 @@ namespace NotesApp.View
         public LoginWindow()
         {
             InitializeComponent();
+
+            var vm = new LoginViewModel();
+            ContainerGrid.DataContext = vm;
+            vm.HasLoggedIn += Vm_HasLoggedIn;
+        }
+
+        private void Vm_HasLoggedIn(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void HaveAccountButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            LoginStackPanel.Visibility = Visibility.Visible;
+            RegisterStackPanel.Visibility = Visibility.Collapsed;
+
+        }
+
+        private void NoAccountButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            RegisterStackPanel.Visibility = Visibility.Visible;
+            LoginStackPanel.Visibility = Visibility.Collapsed;
         }
     }
 }

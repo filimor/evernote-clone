@@ -1,28 +1,32 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
+using NotesApp.Model;
 
 namespace NotesApp.ViewModel.Commands
 {
     public class RegisterCommand : ICommand
     {
-        public LoginViewModel Vm { get; set; }
-
         public RegisterCommand(LoginViewModel vm)
         {
             Vm = vm;
         }
+
+        public LoginViewModel Vm { get; set; }
+
         public bool CanExecute(object parameter)
         {
+            //return parameter is User user &&
+            //       !string.IsNullOrEmpty(user.Username) &&
+            //       !string.IsNullOrEmpty(user.Password) &&
+            //       !string.IsNullOrEmpty(user.Email) &&
+            //       !string.IsNullOrEmpty(user.LastName) &&
+            //       !string.IsNullOrEmpty(user.Email);
             return true;
         }
 
         public void Execute(object parameter)
         {
-            //TODO: Login functionality
+            Vm.Register();
         }
 
         public event EventHandler CanExecuteChanged;

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Speech.Recognition;
 using System.Threading;
@@ -154,6 +155,17 @@ namespace NotesApp.View
         private void FontSizeComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ContentRichTextBox.Selection.ApplyPropertyValue(TextElement.FontSizeProperty, FontSizeComboBox.Text);
+        }
+
+        protected override void OnActivated(EventArgs e)
+        {
+            base.OnActivated(e);
+
+            if (string.IsNullOrEmpty(App.UserId))
+            {
+                var loginWindow = new LoginWindow();
+                loginWindow.ShowDialog();
+            }
         }
     }
 }
