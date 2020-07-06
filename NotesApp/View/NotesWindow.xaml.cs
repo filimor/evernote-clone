@@ -22,7 +22,7 @@ namespace NotesApp.View
         {
             InitializeComponent();
 
-            RecognizerInfo currentCulture = (from r in SpeechRecognitionEngine.InstalledRecognizers()
+            var currentCulture = (from r in SpeechRecognitionEngine.InstalledRecognizers()
                 where r.Culture.Equals(Thread.CurrentThread.CurrentCulture)
                 select r).FirstOrDefault();
             if (currentCulture != null)
@@ -40,10 +40,8 @@ namespace NotesApp.View
 
             FontFamilyComboBox.ItemsSource = Fonts.SystemFontFamilies.OrderBy(f => f.Source);
 
-            FontSizeComboBox.ItemsSource = new List<double>() {8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72};
-
-
-
+            FontSizeComboBox.ItemsSource = new List<double>
+                {8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72};
         }
 
         private void Recognizer_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
@@ -96,15 +94,15 @@ namespace NotesApp.View
 
         private void ContentRichTextBox_OnSelectionChanged(object sender, RoutedEventArgs e)
         {
-            object selectedWeight = ContentRichTextBox.Selection.GetPropertyValue(TextElement.FontWeightProperty);
+            var selectedWeight = ContentRichTextBox.Selection.GetPropertyValue(TextElement.FontWeightProperty);
             BoldButton.IsChecked = selectedWeight != DependencyProperty.UnsetValue &&
                                    selectedWeight.Equals(FontWeights.Bold);
 
-            object selectedStyle = ContentRichTextBox.Selection.GetPropertyValue(TextElement.FontStyleProperty);
+            var selectedStyle = ContentRichTextBox.Selection.GetPropertyValue(TextElement.FontStyleProperty);
             ItalicButton.IsChecked =
                 selectedStyle != DependencyProperty.UnsetValue && selectedStyle.Equals(FontStyles.Italic);
 
-            object selectedDecorations = ContentRichTextBox.Selection.GetPropertyValue(Inline.TextDecorationsProperty);
+            var selectedDecorations = ContentRichTextBox.Selection.GetPropertyValue(Inline.TextDecorationsProperty);
             UnderlineButton.IsChecked = selectedDecorations != DependencyProperty.UnsetValue &&
                                         selectedDecorations.Equals(TextDecorations.Underline);
 
@@ -138,7 +136,7 @@ namespace NotesApp.View
             {
                 ((TextDecorationCollection) ContentRichTextBox.Selection.GetPropertyValue(
                     Inline.TextDecorationsProperty)).TryRemove(TextDecorations.Underline,
-                    out TextDecorationCollection textDecorationCollection);
+                    out var textDecorationCollection);
                 ContentRichTextBox.Selection.ApplyPropertyValue(Inline.TextDecorationsProperty,
                     textDecorationCollection);
             }
@@ -148,7 +146,8 @@ namespace NotesApp.View
         {
             if (FontSizeComboBox.SelectedItem != null)
             {
-                ContentRichTextBox.Selection.ApplyPropertyValue(TextElement.FontFamilyProperty, FontFamilyComboBox.SelectedItem);
+                ContentRichTextBox.Selection.ApplyPropertyValue(TextElement.FontFamilyProperty,
+                    FontFamilyComboBox.SelectedItem);
             }
         }
 

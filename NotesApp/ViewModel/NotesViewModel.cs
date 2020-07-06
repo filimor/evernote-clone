@@ -1,31 +1,49 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using NotesApp.Model;
 using NotesApp.ViewModel.Commands;
 using SQLite;
 
 namespace NotesApp.ViewModel
 {
-    public class NotesViewModel
+    public class NotesViewModel : INotifyPropertyChanged
     {
+        private bool _isEditing;
+
+        private Notebook _selectedNotebook;
+
         public NotesViewModel()
         {
             NewNotebookCommand = new NewNotebookCommand(this);
             NewNoteCommand = new NewNoteCommand(this);
             Notebooks = new ObservableCollection<Notebook>();
             Notes = new ObservableCollection<Note>();
+            BeginEditCommand = new BeginEditCommand(this);
+            HasEditedCommand = new HasEditedCommand(this);
 
             DatabaseHelper.InitializeDb();
             ReadNotebooks();
             ReadNotes();
         }
 
+        public bool IsEditing
+        {
+            get => _isEditing;
+            set
+            {
+                _isEditing = value;
+                OnPropertyChanged(nameof(IsEditing));
+            }
+        }
+
         public ObservableCollection<Note> Notes { get; set; }
         public NewNotebookCommand NewNotebookCommand { get; set; }
         public NewNoteCommand NewNoteCommand { get; set; }
         public ObservableCollection<Notebook> Notebooks { get; set; }
-
-        private Notebook _selectedNotebook;
+        public BeginEditCommand BeginEditCommand { get; set; }
+        public HasEditedCommand HasEditedCommand { get; set; }
 
         public Notebook SelectedNotebook
         {
@@ -37,10 +55,11 @@ namespace NotesApp.ViewModel
             }
         }
 
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public void CreateNotebook()
         {
-            var newNotebook = new Notebook()
+            var newNotebook = new Notebook
             {
                 Name = "New notebook",
                 UserId = int.Parse(App.UserId)
@@ -52,7 +71,7 @@ namespace NotesApp.ViewModel
 
         public void CreateNote(int notebookId)
         {
-            var newNote = new Note()
+            var newNote = new Note
             {
                 NotebookId = notebookId,
                 CreatedTime = DateTime.Now,
@@ -81,7 +100,7 @@ namespace NotesApp.ViewModel
         {
             using (var conn = new SQLiteConnection(DatabaseHelper.DbFile))
             {
-                if (SelectedNotebook!=null)
+                if (SelectedNotebook != null)
                 {
                     var notes = conn.Table<Note>().Where(n => n.NotebookId == SelectedNotebook.Id).ToList();
                     Notes.Clear();
@@ -91,6 +110,26 @@ namespace NotesApp.ViewModel
                     }
                 }
             }
+        }
+
+        public void StartEditing()
+        {
+            IsEditing = true;
+        }
+
+        public void HasRenamed(Notebook notebook)
+        {
+            if (notebook != null)
+            {
+                DatabaseHelper.Update(notebook);
+                IsEditing = false;
+                ReadNotebooks();
+            }
+        }
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
