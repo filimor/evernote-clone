@@ -10,6 +10,19 @@ namespace NotesApp.ViewModel
 {
     public class NotesViewModel : INotifyPropertyChanged
     {
+        private Note _selectedNote;
+
+        public Note SelectedNote
+        {
+            get => _selectedNote;
+            set
+            {
+                _selectedNote = value;
+                SelectedNoteChanged(this,new EventArgs());
+
+            }
+        }
+
         private bool _isEditing;
 
         private Notebook _selectedNotebook;
@@ -56,6 +69,7 @@ namespace NotesApp.ViewModel
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+        public event EventHandler SelectedNoteChanged;
 
         public void CreateNotebook()
         {
@@ -130,6 +144,11 @@ namespace NotesApp.ViewModel
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void UpdateSelectedNote()
+        {
+            DatabaseHelper.Update(SelectedNote);
         }
     }
 }

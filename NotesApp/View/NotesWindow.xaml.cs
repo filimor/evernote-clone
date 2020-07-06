@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Speech.Recognition;
 using System.Threading;
@@ -8,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Media;
+using NotesApp.ViewModel;
 
 namespace NotesApp.View
 {
@@ -17,10 +19,15 @@ namespace NotesApp.View
     public partial class NotesWindow : Window
     {
         private readonly SpeechRecognitionEngine _recognizer;
+        private readonly NotesViewModel _viewModel;
 
         public NotesWindow()
         {
             InitializeComponent();
+
+            _viewModel = new NotesViewModel();
+            Container.DataContext = _viewModel;
+            _viewModel.SelectedNoteChanged += ViewModel_SelectedNoteChanged;
 
             var currentCulture = (from r in SpeechRecognitionEngine.InstalledRecognizers()
                 where r.Culture.Equals(Thread.CurrentThread.CurrentCulture)
@@ -42,6 +49,16 @@ namespace NotesApp.View
 
             FontSizeComboBox.ItemsSource = new List<double>
                 {8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72};
+        }
+
+        private void ViewModel_SelectedNoteChanged(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(_viewModel.SelectedNote.FileLocation))
+            {
+                var fileStream = new FileStream(_viewModel.SelectedNote.FileLocation, FileMode.Open);
+                var range = new TextRange(ContentRichTextBox.Document.ContentStart, ContentRichTextBox.Document.ContentEnd);
+                range.Load(fileStream, DataFormats.Rtf);
+            }
         }
 
         private void Recognizer_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
@@ -165,6 +182,18 @@ namespace NotesApp.View
                 var loginWindow = new LoginWindow();
                 loginWindow.ShowDialog();
             }
+        }
+
+        private void SaveButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            string rtfFile = Path.Combine(Environment.CurrentDirectory, $"Note{_viewModel.SelectedNotebook.Id}.rtf");
+            _viewModel.SelectedNote.FileLocation = rtfFile;
+
+            var fileStream = new FileStream(rtfFile, FileMode.Create);
+            var range = new TextRange(ContentRichTextBox.Document.ContentStart, ContentRichTextBox.Document.ContentEnd);
+            range.Save(fileStream, DataFormats.Rtf);
+
+            _viewModel.UpdateSelectedNote();
         }
     }
 }
