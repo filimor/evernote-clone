@@ -23,7 +23,7 @@ namespace NotesApp.ViewModel.Commands
 
         public void Execute(object parameter)
         {
-            Vm.Login();
+            Vm.LoginAsync();
         }
 
         public event EventHandler CanExecuteChanged;

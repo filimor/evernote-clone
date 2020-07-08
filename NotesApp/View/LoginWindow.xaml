@@ -13,7 +13,9 @@
     <Grid x:Name="ContainerGrid">
         <StackPanel x:Name="LoginStackPanel" Margin="20 0" VerticalAlignment="Center"
                     Visibility="Collapsed">
+            <TextBlock Text="Username:" />
             <TextBox Text="{Binding User.Username, Mode=TwoWay}" />
+            <TextBlock Text="Password:" />
             <TextBox Text="{Binding User.Password, Mode=TwoWay}"
                      Margin="0 5 0 0"/>
             <Button Margin="0 5 0 0" Command="{Binding LoginCommand}"
@@ -27,13 +29,18 @@
         </StackPanel>
         <StackPanel x:Name="RegisterStackPanel" Margin="20 0" VerticalAlignment="Center"
                     >
+            <TextBlock Text="Username:" />
             <TextBox Text="{Binding User.Username, Mode=TwoWay}" />
+            <TextBlock Text="Email:" />
             <TextBox Text="{Binding User.Email, Mode=TwoWay}"
                      Margin="0 5 0 0"/>
+            <TextBlock Text="First name:" />
             <TextBox Text="{Binding User.Name, Mode=TwoWay}"
                      Margin="0 5 0 0"/>
+            <TextBlock Text="Last name:" />
             <TextBox Text="{Binding User.LastName, Mode=TwoWay}"
                      Margin="0 5 0 0"/>
+            <TextBlock Text="Password:" />
             <TextBox Text="{Binding User.Password, Mode=TwoWay}"
                      Margin="0 5 0 0"/>
             <Button Margin="0 5 0 0" Command="{Binding RegisterCommand}"

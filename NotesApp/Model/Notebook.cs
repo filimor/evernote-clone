@@ -6,14 +6,14 @@ namespace NotesApp.Model
 {
     public class Notebook : INotifyPropertyChanged
     {
-        private int _id;
+        private string _id;
 
         private string _name;
 
-        private int _userId;
+        private string _userId;
 
         [PrimaryKey, AutoIncrement]
-        public int Id
+        public string Id
         {
             get => _id;
             set
@@ -24,7 +24,7 @@ namespace NotesApp.Model
         }
 
         [Indexed]
-        public int UserId
+        public string UserId
         {
             get => _userId;
             set

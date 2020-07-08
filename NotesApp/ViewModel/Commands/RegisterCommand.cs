@@ -26,7 +26,7 @@ namespace NotesApp.ViewModel.Commands
 
         public void Execute(object parameter)
         {
-            Vm.Register();
+            Vm.RegisterAsync();
         }
 
         public event EventHandler CanExecuteChanged;

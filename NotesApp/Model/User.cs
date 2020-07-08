@@ -8,7 +8,7 @@ namespace NotesApp.Model
     {
         private string _email;
 
-        private int _id;
+        private string _id;
 
         private string _lastName;
 
@@ -19,7 +19,7 @@ namespace NotesApp.Model
         private string _username;
 
         [PrimaryKey, AutoIncrement]
-        public int Id
+        public string Id
         {
             get => _id;
             set

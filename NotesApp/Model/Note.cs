@@ -11,16 +11,16 @@ namespace NotesApp.Model
 
         private string _fileLocation;
 
-        private int _id;
+        private string _id;
 
-        private int _notebookId;
+        private string _notebookId;
 
         private string _title;
 
         private DateTime _updatedTime;
 
         [PrimaryKey, AutoIncrement]
-        public int Id
+        public string Id
         {
             get => _id;
             set
@@ -31,7 +31,7 @@ namespace NotesApp.Model
         }
 
         [Indexed]
-        public int NotebookId
+        public string NotebookId
         {
             get => _notebookId;
             set
