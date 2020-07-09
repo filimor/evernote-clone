@@ -19,7 +19,7 @@ namespace NotesApp.ViewModel.Commands
 
         public void Execute(object parameter)
         {
-            Vm.CreateNotebook();
+            Vm.CreateNotebookAsync();
         }
 
         public event EventHandler CanExecuteChanged;

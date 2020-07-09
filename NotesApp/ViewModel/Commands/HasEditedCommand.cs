@@ -23,7 +23,7 @@ namespace NotesApp.ViewModel.Commands
 
         public void Execute(object parameter)
         {
-            Vm.HasRenamed(parameter as Notebook);
+            Vm.HasRenamedAsync(parameter as Notebook);
         }
 
         public event EventHandler CanExecuteChanged;

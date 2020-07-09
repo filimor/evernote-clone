@@ -193,7 +193,7 @@ namespace NotesApp.View
             var range = new TextRange(ContentRichTextBox.Document.ContentStart, ContentRichTextBox.Document.ContentEnd);
             range.Save(fileStream, DataFormats.Rtf);
 
-            _viewModel.UpdateSelectedNote();
+            _viewModel.UpdateSelectedNoteAsync();
         }
     }
 }

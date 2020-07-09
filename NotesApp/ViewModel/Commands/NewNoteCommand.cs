@@ -21,7 +21,7 @@ namespace NotesApp.ViewModel.Commands
         public void Execute(object parameter)
         {
             var selectedNotebook = parameter as Notebook;
-            Vm.CreateNote(selectedNotebook.Id);
+            Vm.CreateNoteAsync(selectedNotebook.Id);
         }
 
         public event EventHandler CanExecuteChanged;

@@ -41,19 +41,16 @@
                 <DataTemplate>
                     <Grid>
                         <uc:NotebookControl DisplayNotebook="{Binding}" />
-                        <TextBox Text="{Binding Name, Mode=TwoWay}"
-                                 Visibility="{Binding Source={StaticResource Vm}, Path=IsEditing, Converter={StaticResource BoolToVisibility}}">
+                        <TextBox Text="{Binding Name, Mode=TwoWay}" Visibility="{Binding Source={StaticResource Vm}, Path=IsEditing, Converter={StaticResource BoolToVisibility}}">
                             <b:Interaction.Triggers>
                                 <b:EventTrigger EventName="LostFocus">
-                                    <b:InvokeCommandAction
-                                        Command="{Binding Source={StaticResource Vm}, Path=HasEditedCommand, ConverterParameter={Binding}}" />
+                                    <b:InvokeCommandAction Command="{Binding Source={StaticResource Vm}, Path=HasEditedCommand, ConverterParameter={Binding}}" />
                                 </b:EventTrigger>
                             </b:Interaction.Triggers>
                         </TextBox>
                         <Grid.ContextMenu>
                             <ContextMenu>
-                                <MenuItem Command="{Binding Source={StaticResource Vm}, Path=BeginEditCommand}"
-                                          Header="Rename" />
+                                <MenuItem Command="{Binding Source={StaticResource Vm}, Path=BeginEditCommand}" Header="Rename" />
                             </ContextMenu>
                         </Grid.ContextMenu>
                     </Grid>
@@ -62,8 +59,8 @@
         </ListView>
         <ListView Width="140"
                   DockPanel.Dock="Left"
-                  SelectedItem="{Binding SelectedNote}"
-                  ItemsSource="{Binding Notes}">
+                  ItemsSource="{Binding Notes}"
+                  SelectedItem="{Binding SelectedNote}">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <uc:NoteControl Note="{Binding}" />
@@ -91,7 +88,9 @@
                           Width="30"
                           IsEditable="True"
                           SelectionChanged="FontSizeComboBox_OnSelectionChanged" />
-                <Button x:Name="SaveButton" Content="Save" Click="SaveButton_OnClick" />
+                <Button x:Name="SaveButton"
+                        Click="SaveButton_OnClick"
+                        Content="Save" />
             </ToolBar>
         </ToolBarTray>
         <Grid>

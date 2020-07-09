@@ -19,6 +19,7 @@ namespace NotesApp.ViewModel
             {
                 _selectedNote = value;
                 SelectedNoteChanged(this,new EventArgs());
+                OnPropertyChanged(nameof(SelectedNote));
 
             }
         }
@@ -37,8 +38,8 @@ namespace NotesApp.ViewModel
             HasEditedCommand = new HasEditedCommand(this);
 
             DatabaseHelper.InitializeDb();
-            ReadNotebooks();
-            ReadNotes();
+            ReadNotebooksAsync();
+            ReadNotesAsync();
         }
 
         public bool IsEditing
@@ -64,26 +65,37 @@ namespace NotesApp.ViewModel
             set
             {
                 _selectedNotebook = value;
-                ReadNotes();
+                ReadNotesAsync();
+                OnPropertyChanged(nameof(SelectedNotebook));
             }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
         public event EventHandler SelectedNoteChanged;
 
-        public void CreateNotebook()
+        public async void CreateNotebookAsync()
         {
             var newNotebook = new Notebook
             {
                 Name = "New notebook",
-                UserId = int.Parse(App.UserId)
+                UserId = App.UserId
             };
 
-            DatabaseHelper.Insert(newNotebook);
-            ReadNotebooks();
+            // DatabaseHelper.Insert(newNotebook);
+
+            try
+            {
+                await App.MobileServiceClient.GetTable<Notebook>().InsertAsync(newNotebook);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            ReadNotebooksAsync();
         }
 
-        public void CreateNote(int notebookId)
+        public async void CreateNoteAsync(string notebookId)
         {
             var newNote = new Note
             {
@@ -93,36 +105,77 @@ namespace NotesApp.ViewModel
                 Title = "New note"
             };
 
-            DatabaseHelper.Insert(newNote);
-            ReadNotes();
+            // DatabaseHelper.Insert(newNote);
+
+            try
+            {
+                await App.MobileServiceClient.GetTable<Note>().InsertAsync(newNote);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
+            ReadNotesAsync();
         }
 
-        public void ReadNotebooks()
+        public async void ReadNotebooksAsync()
         {
-            using (var conn = new SQLiteConnection(DatabaseHelper.DbFile))
+            //using (var conn = new SQLiteConnection(DatabaseHelper.DbFile))
+            //{
+            //    var notebooks = conn.Table<Notebook>().ToList();
+            //    Notebooks.Clear();
+            //    foreach (var notebook in notebooks)
+            //    {
+            //        Notebooks.Add(notebook);
+            //    }
+            //}
+
+            try
             {
-                var notebooks = conn.Table<Notebook>().ToList();
+                var notebooks = await App.MobileServiceClient.GetTable<Notebook>().Where(n => n.UserId == App.UserId)
+                    .ToListAsync();
                 Notebooks.Clear();
                 foreach (var notebook in notebooks)
                 {
                     Notebooks.Add(notebook);
                 }
             }
+            catch (Exception e)
+            {
+                // TODO
+            }
         }
 
-        public void ReadNotes()
+        public async void ReadNotesAsync()
         {
-            using (var conn = new SQLiteConnection(DatabaseHelper.DbFile))
+            //using (var conn = new SQLiteConnection(DatabaseHelper.DbFile))
+            //{
+            //    if (SelectedNotebook != null)
+            //    {
+            //        var notes = conn.Table<Note>().Where(n => n.NotebookId == SelectedNotebook.Id).ToList();
+            //        Notes.Clear();
+            //        foreach (var note in notes)
+            //        {
+            //            Notes.Add(note);
+            //        }
+            //    }
+            //}
+
+            try
             {
-                if (SelectedNotebook != null)
+                var notes = await App.MobileServiceClient.GetTable<Note>().Where(n => n.NotebookId == SelectedNotebook.Id)
+                    .ToListAsync();
+                Notebooks.Clear();
+                foreach (var note in notes)
                 {
-                    var notes = conn.Table<Note>().Where(n => n.NotebookId == SelectedNotebook.Id).ToList();
-                    Notes.Clear();
-                    foreach (var note in notes)
-                    {
-                        Notes.Add(note);
-                    }
+                    Notes.Add(note);
                 }
+            }
+            catch (Exception e)
+            {
+               // TODO
             }
         }
 
@@ -131,13 +184,24 @@ namespace NotesApp.ViewModel
             IsEditing = true;
         }
 
-        public void HasRenamed(Notebook notebook)
+        public async void HasRenamedAsync(Notebook notebook)
         {
             if (notebook != null)
             {
-                DatabaseHelper.Update(notebook);
-                IsEditing = false;
-                ReadNotebooks();
+                // DatabaseHelper.Update(notebook);
+
+                try
+                {
+                    await App.MobileServiceClient.GetSyncTable<Notebook>().UpdateAsync(notebook);
+                    IsEditing = false;
+                    ReadNotebooksAsync();
+                }
+                catch (Exception e)
+                {
+                    // TODO
+                }
+
+
             }
         }
 
@@ -146,9 +210,19 @@ namespace NotesApp.ViewModel
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public void UpdateSelectedNote()
+        public async void UpdateSelectedNoteAsync()
         {
-            DatabaseHelper.Update(SelectedNote);
+            // DatabaseHelper.Update(SelectedNote);
+
+            try
+            {
+                await App.MobileServiceClient.GetSyncTable<Note>().UpdateAsync(SelectedNote);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
     }
 }
