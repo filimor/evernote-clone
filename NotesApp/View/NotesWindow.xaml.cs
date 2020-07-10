@@ -2,13 +2,17 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Speech.Recognition;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Media;
+using Microsoft.WindowsAzure.Storage;
 using NotesApp.ViewModel;
 
 namespace NotesApp.View
@@ -27,7 +31,7 @@ namespace NotesApp.View
 
             _viewModel = new NotesViewModel();
             Container.DataContext = _viewModel;
-            _viewModel.SelectedNoteChanged += ViewModel_SelectedNoteChanged;
+            _viewModel.SelectedNoteChanged += ViewModel_SelectedNoteChangedAsync;
 
             var currentCulture = (from r in SpeechRecognitionEngine.InstalledRecognizers()
                 where r.Culture.Equals(Thread.CurrentThread.CurrentCulture)
@@ -51,13 +55,28 @@ namespace NotesApp.View
                 {8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72};
         }
 
-        private void ViewModel_SelectedNoteChanged(object sender, EventArgs e)
+        private async void ViewModel_SelectedNoteChangedAsync(object sender, EventArgs e)
         {
             if (!string.IsNullOrEmpty(_viewModel.SelectedNote.FileLocation))
             {
-                var fileStream = new FileStream(_viewModel.SelectedNote.FileLocation, FileMode.Open);
-                var range = new TextRange(ContentRichTextBox.Document.ContentStart, ContentRichTextBox.Document.ContentEnd);
-                range.Load(fileStream, DataFormats.Rtf);
+                Stream rtfFileStream = null;
+
+                using (var client = new HttpClient())
+                {
+                    var response = await client.GetAsync(_viewModel.SelectedNote.FileLocation);
+                    rtfFileStream = await response.Content.ReadAsStreamAsync();
+
+                    var range = new TextRange(ContentRichTextBox.Document.ContentStart,
+                        ContentRichTextBox.Document.ContentEnd);
+                    range.Load(rtfFileStream, DataFormats.Rtf);
+                }
+
+                //using (var fileStream = new FileStream(_viewModel.SelectedNote.FileLocation, FileMode.Open))
+                //{
+                //    var range = new TextRange(ContentRichTextBox.Document.ContentStart,
+                //        ContentRichTextBox.Document.ContentEnd);
+                //    range.Load(fileStream, DataFormats.Rtf);
+                //}
             }
         }
 
@@ -184,16 +203,41 @@ namespace NotesApp.View
             }
         }
 
-        private void SaveButton_OnClick(object sender, RoutedEventArgs e)
+        private async void SaveButton_OnClickAsync(object sender, RoutedEventArgs e)
         {
-            string rtfFile = Path.Combine(Environment.CurrentDirectory, $"Note{_viewModel.SelectedNotebook.Id}.rtf");
+            string fileName = $"{_viewModel.SelectedNotebook.Id}.rtf";
+            string rtfFile = Path.Combine(Environment.CurrentDirectory, fileName);
             _viewModel.SelectedNote.FileLocation = rtfFile;
 
-            var fileStream = new FileStream(rtfFile, FileMode.Create);
-            var range = new TextRange(ContentRichTextBox.Document.ContentStart, ContentRichTextBox.Document.ContentEnd);
-            range.Save(fileStream, DataFormats.Rtf);
+            using (var fileStream = new FileStream(rtfFile, FileMode.Create))
+            {
+                var range = new TextRange(ContentRichTextBox.Document.ContentStart,
+                    ContentRichTextBox.Document.ContentEnd);
+                range.Save(fileStream, DataFormats.Rtf);
+            }
+
+            string fileUrl = await UploadFileAsync(rtfFile, fileName);
+            _viewModel.SelectedNote.FileLocation = fileUrl;
 
             _viewModel.UpdateSelectedNoteAsync();
+        }
+
+        private async Task<string> UploadFileAsync(string rtfFileLocation, string fileName)
+        {
+            string fileUrl = string.Empty;
+            var account = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=cloneevernotestorage;AccountKey=y6LXpZTkzrPQQ3N3aBq2d5ScY7xhK8N5F8kursz1vVSXCNLLCrlZKl8HLbENREJ+iulfwVBuQaAXCZ0QYe9orQ==;EndpointSuffix=core.windows.net");
+            var client = account.CreateCloudBlobClient();
+            var container = client.GetContainerReference("notes");
+            // await container.CreateIfNotExistsAsync();
+            var blob = container.GetBlockBlobReference(fileName);
+
+            using (var fileStream = new FileStream(rtfFileLocation, FileMode.Open))
+            {
+                await blob.UploadFromStreamAsync(fileStream);
+                fileUrl = blob.Uri.OriginalString;
+            }
+
+            return fileUrl;
         }
     }
 }

@@ -89,7 +89,7 @@
                           IsEditable="True"
                           SelectionChanged="FontSizeComboBox_OnSelectionChanged" />
                 <Button x:Name="SaveButton"
-                        Click="SaveButton_OnClick"
+                        Click="SaveButton_OnClickAsync"
                         Content="Save" />
             </ToolBar>
         </ToolBarTray>
